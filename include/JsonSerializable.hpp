@@ -1,15 +1,19 @@
 #pragma once
+#include <unordered_map>
+#include <vector>
 #include <variant>
-#include <memory>
 #include <string>
+#include <cstdint>
 
 namespace andamiro
 {
-    using mixed = std::variant<std::nullptr_t, std::string, bool, int, double>; // TODO JsonSerializable 추가해야됨 지금 오류떠서 뺌
+    // class JsonSerializable
+    // {
+    // public:
+    //     virtual Value jsonSerialize() const = 0;
+    // };
 
-    class JsonSerializable
-    {
-    public:
-        virtual mixed jsonSerialize() const = 0;
-    };
+    // std::string json_encode(const Value &value);
+
+    // Value json_decode(const std::string &str);
 }
