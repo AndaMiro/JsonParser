@@ -1,0 +1,35 @@
+# =====================
+# IDE / Editor settings
+# =====================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =====================
+# OS-specific files
+# =====================
+.DS_Store
+Thumbs.db
+
+# =====================
+# Build artifacts
+# =====================
+build/
+dist/
+out/
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+*.a
+*.lib
+
+# =====================
+# Logs & temp files
+# =====================
+*.log
+*.tmp
+*.bak
+*.cache
