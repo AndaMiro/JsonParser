@@ -12,7 +12,7 @@ namespace andamiro::array
     struct Proxy;
     struct Key;
 
-    using Value = std::variant<std::nullptr_t, std::string, bool, int64_t, double, std::shared_ptr<Array>>;
+    using Value = std::variant<std::nullptr_t, std::string, bool, int64_t, double, Array *>;
     using MultiValue = std::variant<std::unordered_map<Key, Value>, std::vector<Value>>;
 
     struct Array
@@ -23,8 +23,13 @@ namespace andamiro::array
         std::shared_ptr<MultiValue> data_;
         size_t nextIdx_ = 0;
 
-        std::vector<Value> &asVector() { return std::get<std::vector<Value>>(*data_); }
-        std::unordered_map<Key, Value> &asMap() { return std::get<std::unordered_map<Key, Value>>(*data_); }
+        bool isMap() const { return std::holds_alternative<std::unordered_map<Key, Value>>(*data_); }
+        bool isVector() const { return std::holds_alternative<std::vector<Value>>(*data_); }
+
+        std::unordered_map<Key, Value> &asMap() const { return std::get<std::unordered_map<Key, Value>>(*data_); }
+        std::vector<Value> &asVector() const { return std::get<std::vector<Value>>(*data_); }
+
+        void toMap();
 
         void detach();
 
@@ -37,14 +42,6 @@ namespace andamiro::array
         Array &operator=(Array &&) noexcept = default;
 
         Proxy operator[](const Key &key) { return Proxy(this, key); }
-
-        bool isMap() const { return std::holds_alternative<std::unordered_map<Key, Value>>(*data_); }
-        bool isVector() const { return std::holds_alternative<std::vector<Value>>(*data_); }
-
-        std::unordered_map<Key, Value> &asMap() const { return std::get<std::unordered_map<Key, Value>>(*data_); }
-        std::vector<Value> &asVector() const { return std::get<std::vector<Value>>(*data_); }
-
-        void toMap();
     };
 
     struct Proxy
@@ -70,11 +67,13 @@ namespace andamiro::array
         Value &get() const;
 
         operator Value &() const { return get(); }
-        operator Array &() const { return *std::get<std::shared_ptr<Array>>(get()); }
+        operator Array &() const { return *std::get<Array *>(get()); }
         operator std::string &() const { return std::get<std::string>(get()); }
         operator bool() const { return std::get<bool>(get()); }
         operator int64_t() const { return std::get<int64_t>(get()); }
         operator double() const { return std::get<double>(get()); }
+
+        bool isset() const;
     };
 
     struct Key
@@ -96,8 +95,6 @@ namespace andamiro::array
         operator const std::string &() const { return std::get<std::string>(value_); }
         operator size_t() const { return std::get<size_t>(value_); }
     };
-
-    bool isset(const Proxy &proxy) const;
 }
 
 namespace std
